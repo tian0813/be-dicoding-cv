@@ -12,3 +12,42 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Cv {
+  id Int @id @default(autoincrement())
+  full_name String
+  email String
+  phone_number String?
+  address String?
+  birth_date DateTime
+  gender String
+  summary String
+  education Json
+  work_experience Json
+  skills Json
+  languages Json
+  certifications Json?
+  portofolio_link String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isDeleted Boolean @default(false)
+  userId Int
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("cvs")
+}
+
+model User {
+  id Int @id @default(autoincrement())
+  name String
+  email String @unique
+  password String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isDeleted Boolean @default(false)
+
+  cvs Cv[]
+
+  @@map("users")
+}
