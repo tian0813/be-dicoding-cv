@@ -1,4 +1,4 @@
-export type Note = {
+export type Cv = {
   id: number;
   title: string;
   content: string;
@@ -6,18 +6,18 @@ export type Note = {
   updatedAt: Date;
 }
 
-export type CreateNoteDto = {
+export type CreateCvDto = {
   title: string;
   content: string;
   email: string;
 }
 
-export type UpdateNoteDto = {
+export type UpdateCvDto = {
   title?: string;
   content?: string;
 }
 
-export interface NoteFilters {
+export interface CvFilters {
   search?: string;
   startDate?: Date;
   endDate?: Date;

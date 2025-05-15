@@ -1,12 +1,10 @@
 import { NextFunction, Response } from "express";
 import { responses } from "../constants";
 import { AuthRequest } from "../middleware/auth";
-import NoteService from "../services/note.service";
-import { NoteFilters } from "../types/note";
+import CvService from "../services/cv.service";
+import { CvFilters } from "../types/cv";
 import { PaginationParams } from "../types/pagination";
 
-class NoteController {
-  
-}
+class CvController {}
 
-export default NoteController;
+export default CvController;
