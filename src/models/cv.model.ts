@@ -1,4 +1,4 @@
-import { type Cv as PrismaNote } from '@prisma/client';
+import { type Cv as PrismaCv } from '@prisma/client';
 
 class Cv {
   

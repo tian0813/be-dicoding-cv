@@ -1,20 +1,20 @@
 export type Cv = {
   id: number;
-  title: string;
-  content: string;
+  cv_text: string;
+  parsed_cv?: any;
   createdAt: Date;
   updatedAt: Date;
 }
 
 export type CreateCvDto = {
-  title: string;
-  content: string;
+  cv_text: string;
+  parsed_cv?: any;
   email: string;
 }
 
 export type UpdateCvDto = {
-  title?: string;
-  content?: string;
+  cv_text?: string;
+  parsed_cv?: any;
 }
 
 export interface CvFilters {

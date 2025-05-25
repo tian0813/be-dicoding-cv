@@ -1,11 +1,11 @@
 export const responses = {
-  successGetNotes: "Success get notes",
-  successCreateNote: "Success create note",
-  successUpdateNote: "Success update note",
-  successDeleteNote: "Success delete note",
+  successGetCvs: "Success get cvs",
+  successCreateCv: "Success create cv",
+  successUpdateCv: "Success update cv",
+  successDeleteCv: "Success delete cv",
   errorNotFound: "Note not found",
-  errorGetNotes: "Error get notes",
-  errorCreateNote: "Error create note",
-  errorUpdateNote: "Error update note",
-  errorDeleteNote: "Error delete note"
+  errorGetCvs: "Error get cvs",
+  errorCreateCv: "Error create cv",
+  errorUpdateCv: "Error update cv",
+  errorDeleteCv: "Error delete cv"
 }
