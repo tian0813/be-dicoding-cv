@@ -38,6 +38,78 @@ class CvService {
       },
     };
   }
+
+  async getCvById(id: number, userId: number): Promise<Cv | string> {
+    const cv = await this.cvRepository.findById(id, userId);
+    if (typeof cv === "string") {
+      return cv;
+    }
+
+    if (!cv) {
+      return "Cv not found";
+    }
+
+    return cv;
+  }
+
+  async createCv(cvData: CreateCvDto): Promise<Cv | string> {
+    if (
+      !cvData.appliedPosition ||
+      !cvData.jobTitle ||
+      !cvData.technicalSkills ||
+      !cvData.profesionalExperience ||
+      !cvData.rawText
+    ) {
+      return "Applied Position, Job Title, Technicah Skill, Profesional Experience and Raw Text are required";
+    }
+
+    const result = await this.cvRepository.create(cvData);
+    if (typeof result === "string") {
+      return result;
+    }
+
+    return result;
+  }
+
+  async updateCv(
+    userId: number,
+    id: number,
+    cvData: UpdateCvDto
+  ): Promise<Cv | string> {
+    const existingCv = await this.cvRepository.findById(id, userId);
+    if (typeof existingCv === "string") {
+      return existingCv;
+    }
+
+    if (!existingCv) {
+      return "Cv not found";
+    }
+
+    const result = await this.cvRepository.update(id, cvData);
+    if (typeof result === "string") {
+      return result;
+    }
+
+    return result;
+  }
+
+  async softDelete(id: number, userId: number): Promise<Cv | string> {
+    const cv = await this.cvRepository.findById(id, userId)
+    if (typeof cv === "string") {
+      return cv;
+    }
+
+    if (!cv) {
+      return "Cv not found";
+    }
+
+    const result = await this.cvRepository.softDelete(id);
+    if (typeof result === "string") {
+      return result;
+    }
+
+    return result;
+  }
 }
 
 export default CvService;

@@ -21,8 +21,12 @@ export type CreateCvDto = {
 };
 
 export type UpdateCvDto = {
-  cv_text?: string;
-  parsed_cv?: any;
+  appliedPosition?: string;
+  jobTitle?: string;
+  technicalSkills?: string;
+  profesionalExperience?: string;
+  rawText?: string;
+  matchScore?: number;
 };
 
 export interface CvFilters {

@@ -106,6 +106,36 @@ class CvRepository {
       return getErrorMessage(error);
     }
   }
+
+  async update(id: number, cvData: UpdateCvDto): Promise<Cv | string> {
+    try {
+      const cv = await this.prisma.cv.update({
+        where: { id } as Prisma.CvWhereUniqueInput,
+        data: {
+          ...cvData,
+          updatedAt: new Date(),
+        },
+      });
+      return Cv.fromEntity(cv);
+    } catch (error) {
+      return getErrorMessage(error);
+    }
+  }
+
+  async softDelete(id: number): Promise<Cv | string> {
+    try {
+      const cv = await this.prisma.cv.update({
+        where: { id } as Prisma.CvWhereUniqueInput,
+        data: {
+          isDeleted: true,
+          updatedAt: new Date(),
+        } as Prisma.CvUpdateInput,
+      });
+      return Cv.fromEntity(cv);
+    } catch (error) {
+      return getErrorMessage(error);
+    }
+  }
 }
 
 export default CvRepository;

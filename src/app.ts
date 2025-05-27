@@ -21,7 +21,7 @@ app.use(cors({ origin: "*" }));
 
 // routes
 app.use("/api/auth", authRouter);
-app.use("/api/cv", authorize, notesRouter);
+app.use("/api/cvs", authorize, notesRouter);
 // app.use("/api/notes", authorize, notesRouter);
 
 // swagger

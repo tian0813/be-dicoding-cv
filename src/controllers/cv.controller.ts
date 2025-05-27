@@ -60,6 +60,134 @@ class CvController {
       next(error);
     }
   }
+
+  async getCvById(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      if (!req.user) {
+        return res.status(500).json({
+          success: false,
+          message: "Unauthorized",
+        });
+      }
+
+      const result = await this.cvService.getCvById(
+        Number(req.params.id),
+        req.user.id
+      );
+
+      if (typeof result === "string") {
+        return res.status(400).json({
+          success: false,
+          message: result,
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: responses.successGetCvs,
+        data: result.toDTO(),
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async createCv(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      if (!req.user) {
+        return res.status(500).json({
+          success: false,
+          message: "Unauthorized",
+        });
+      }
+
+      const result = await this.cvService.createCv({
+        appliedPosition: req.body.appliedPosition,
+        jobTitle: req.body.jobTitle,
+        technicalSkills: req.body.technicalSkills,
+        profesionalExperience: req.body.profesionalExperience,
+        rawText: req.body.rawText,
+        email: req.user.email,
+      });
+
+      if (typeof result === "string") {
+        return res.status(400).json({
+          success: false,
+          message: result,
+        });
+      }
+
+      res.status(201).json({
+        success: true,
+        message: responses.successCreateCv,
+        data: result.toDTO(),
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async updateCv(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      if (!req.user) {
+        return res.status(500).json({
+          success: false,
+          message: "Unauthorized",
+        });
+      }
+
+      const result = await this.cvService.updateCv(
+        req.user.id,
+        Number(req.params.id),
+        req.body
+      );
+
+      if (typeof result === "string") {
+        return res.status(400).json({
+          success: false,
+          message: result,
+        });
+      }
+
+      res.status(200).json({
+        success: true,
+        message: responses.successUpdateCv,
+        data: result.toDTO(),
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async softDelete(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      if (!req.user) {
+        return res.status(500).json({
+          success: false,
+          message: "Unauthorized",
+        });
+      }
+
+      const result = await this.cvService.softDelete(
+        Number(req.params.id),
+        req.user.id
+      );
+
+      if (typeof result === "string") {
+        return res.status(400).json({
+          success: false,
+          message: result,
+        });
+      }
+
+      res.status(204).json({
+        success: true,
+        message: responses.successDeleteCv,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export default CvController;
