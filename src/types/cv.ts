@@ -1,21 +1,29 @@
 export type Cv = {
   id: number;
-  cv_text: string;
-  parsed_cv?: any;
+  appliedPosition: string;
+  jobTitle: string;
+  technicalSkills: String;
+  profesionalExperience: string;
+  rawText: string;
+  matchScore?: number;
   createdAt: Date;
   updatedAt: Date;
-}
+};
 
 export type CreateCvDto = {
-  cv_text: string;
-  parsed_cv?: any;
+  appliedPosition: string;
+  jobTitle: string;
+  technicalSkills: string;
+  profesionalExperience: string;
+  rawText: string;
+  matchScore?: number;
   email: string;
-}
+};
 
 export type UpdateCvDto = {
   cv_text?: string;
   parsed_cv?: any;
-}
+};
 
 export interface CvFilters {
   search?: string;

@@ -15,10 +15,12 @@ datasource db {
 
 model Cv {
   id Int @id @default(autoincrement())
+  appliedPosition String
   jobTitle String
   technicalSkills String
-  professionalExperience String
+  profesionalExperience String
   rawText String
+  matchScore Float?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   isDeleted Boolean @default(false)

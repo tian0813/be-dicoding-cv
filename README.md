@@ -63,11 +63,11 @@ This project follows a clean and organized structure, ensuring maintainability a
 
 ### Notes
 
-- `GET /api/notes` - Retrieve all notes
-- `POST /api/notes` - Create a new note
-- `GET /api/notes/:id` - Retrieve a specific note by ID
-- `PUT /api/notes/:id` - Update a specific note by ID
-- `PATCH /api/notes/:id` - Soft delete a specific note by ID
+- `GET /api/cvs` - Retrieve all cvs
+- `POST /api/cv` - Create a new cv
+- `GET /api/cv/:id` - Retrieve a specific cv by ID
+- `PUT /api/cv/:id` - Update a specific cv by ID
+- `PATCH /api/cv/:id` - Soft delete a specific cv by ID
 
 ## Getting Started
 
@@ -81,13 +81,13 @@ This project follows a clean and organized structure, ensuring maintainability a
 1. Clone the repository:
 
 ```sh
-git clone https://github.com/Rafli-Dewanto/be-bootcamp-kilat.git note-app-backend
+git clone https://github.com/tian0813/be-dicoding-cv.git
 ```
 
 2. Navigate to the project directory:
 
 ```sh
-cd note-app-backend
+cd be-dicoding-cv
 ```
 
 3. Install dependencies:
@@ -112,16 +112,20 @@ erDiagram
         Boolean isDeleted
     }
 
-    NOTE {
+    CV {
         Int id
-        String title
-        String content
+        String appliedPosition
+        String jobTitle
+        String technicalSkills
+        String profesionalExperience
+        String rawText
+        Float matchScore
         DateTime createdAt
         DateTime updatedAt
         Boolean isDeleted
     }
 
-    USER ||--o{ NOTE : "has many"
+    USER ||--o{ CV : "has many"
 ```
 
 1. Migrate prisma database:
