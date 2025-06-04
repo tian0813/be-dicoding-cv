@@ -194,9 +194,9 @@
     },
     "/cvs": {
       "post": {
-        "summary": "Create a new cv",
+        "summary": "Create a new prediction",
         "tags": ["Cvs"],
-        "description": "Creates a new cv with the given appliedJob and file pdf cv.",
+        "description": "Creates a new prediction with the given appliedJob and file pdf cv.",
         "requestBody": {
           "content": {
             "multipart/form-data": {
