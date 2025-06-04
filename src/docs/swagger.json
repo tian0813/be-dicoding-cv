@@ -1,13 +1,13 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "Notes API",
+    "title": "Cvs API",
     "version": "1.0.0",
-    "description": "API documentation for managing notes"
+    "description": "API documentation for managing cvs"
   },
   "servers": [
     {
-      "url": "https://api-notes.dewanto.dev/api",
+      "url": "https://github.com/tian0813/be-dicoding-cv",
       "description": "Production server"
     }
   ],
@@ -192,69 +192,31 @@
         }
       }
     },
-    "/notes": {
-      "get": {
-        "summary": "Get all notes",
-        "tags": ["Notes"],
-        "security": [{ "bearerAuth": [] }],
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GetNotesResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": { "type": "boolean" },
-                    "message": { "type": "string" }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": { "type": "boolean" },
-                    "message": { "type": "string" }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
+    "/cvs": {
       "post": {
-        "summary": "Create a new note",
-        "tags": ["Notes"],
-        "description": "Creates a new note with the given title and content.",
+        "summary": "Create a new cv",
+        "tags": ["Cvs"],
+        "description": "Creates a new cv with the given appliedJob and file pdf cv.",
         "requestBody": {
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
                 "type": "object",
                 "properties": {
-                  "title": { "type": "string" },
-                  "content": { "type": "string" }
-                }
+                  "appliedJob": {
+                    "type": "string",
+                    "description": "The job the user is applying for"
+                  },
+                  "cv": {
+                    "type": "string",
+                    "format": "file",
+                    "description": "The PDF file of the CV"
+                  }
+                },
+                "required": ["appliedJob", "cv"]
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "201": {
@@ -265,219 +227,7 @@
                   "properties": {
                     "success": { "type": "boolean" },
                     "message": { "type": "string" },
-                    "data": { "$ref": "#/components/schemas/Note" }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": { "type": "boolean", "default": false },
-                    "message": { "type": "string" }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": { "type": "boolean", "default": false },
-                    "message": { "type": "string" }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/notes/{id}": {
-      "get": {
-        "tags": ["Notes"],
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "properties": {
-                    "success": { "type": "boolean" },
-                    "message": { "type": "string" },
-                    "data": { "$ref": "#/components/schemas/Note" }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": { "type": "boolean" },
-                    "message": { "type": "string" }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": { "type": "boolean" },
-                    "message": { "type": "string" }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "summary": "Update a note",
-        "tags": ["Notes"],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            }
-          }
-        ],
-        "description": "Updates the note with the given ID with the given title and content.",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "title": { "type": "string" },
-                  "content": { "type": "string" }
-                }
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "properties": {
-                    "success": { "type": "boolean", "default": true },
-                    "message": {
-                      "type": "string",
-                      "default": "Success update note"
-                    },
-                    "data": { "$ref": "#/components/schemas/Note" }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": { "type": "boolean", "default": false },
-                    "message": { "type": "string" }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": { "type": "boolean", "default": false },
-                    "message": { "type": "string" }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "patch": {
-        "summary": "Soft delete a note",
-        "tags": ["Notes"],
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            }
-          }
-        ],
-        "description": "Soft deletes the note with the given ID.",
-        "responses": {
-          "204": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "properties": {
-                    "success": { "type": "boolean", "default": true },
-                    "message": {
-                      "type": "string",
-                      "default": "Success delete note"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": { "type": "boolean", "default": false },
-                    "message": { "type": "string" }
+                    "data": { "$ref": "#/components/schemas/Cv" }
                   }
                 }
               }
@@ -529,12 +279,12 @@
       }
     },
     "schemas": {
-      "Note": {
+      "Cv": {
         "type": "object",
         "properties": {
           "id": { "type": "integer" },
-          "title": { "type": "string" },
-          "content": { "type": "string" },
+          "appliedJob": { "type": "string" },
+          "cv": { "type": "string", "format": "file" },
           "createdAt": { "type": "string" }
         }
       },
