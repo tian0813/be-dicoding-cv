@@ -288,7 +288,7 @@
           "createdAt": { "type": "string" }
         }
       },
-      "GetNotesResponse": {
+      "GetCvsResponse": {
         "type": "object",
         "properties": {
           "success": { "type": "boolean" },
@@ -296,7 +296,7 @@
           "data": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/Note"
+              "$ref": "#/components/schemas/Cv"
             }
           },
           "meta": {
