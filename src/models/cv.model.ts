@@ -1,59 +1,66 @@
 import { type Cv as PrismaCv } from "@prisma/client";
+import { JsonValue } from "@prisma/client/runtime/library";
+// import e from "@types/express";
 
 class Cv {
   private id: number;
-  private appliedPosition: string;
-  private jobTitle: string;
-  private technicalSkills: string;
-  private profesionalExperience: string;
-  private rawText: string;
+  private appliedJob: string;
+  // private name: string;
+  private educations: JsonValue;
+  private technicalSkills: JsonValue;
+  private profesionalExperience: JsonValue;
   private matchScore: number | null;
-  private createdAt: Date;
+  private createdAt: Date; 
+  private updatedAt: Date;
 
   constructor(
     id: number,
-    appliedPosition: string,
-    jobTitle: string,
-    technicalSkills: string,
-    profesionalExperience: string,
-    rawText: string,
+    appliedJob: string,
+    // name: string,
+    educations: JsonValue,
+    technicalSkills: JsonValue,
+    profesionalExperience: JsonValue,
     matchScore: number | null,
-    createdAt: Date
+    createdAt: Date,
+    updatedAt: Date
   ) {
     this.id = id;
-    this.appliedPosition = appliedPosition;
-    this.jobTitle = jobTitle;
+    this.appliedJob = appliedJob;
+    // this.name = name;
+    this.educations = educations;
     this.technicalSkills = technicalSkills;
     this.profesionalExperience = profesionalExperience;
-    this.rawText = rawText;
     this.matchScore = matchScore;
     this.createdAt = createdAt;
+    this.updatedAt = updatedAt;
   }
 
   static fromEntity(prismaCv: PrismaCv) {
     return new Cv(
-        prismaCv.id,
-        prismaCv.appliedPosition,
-        prismaCv.jobTitle,
-        prismaCv.technicalSkills,
-        prismaCv.profesionalExperience,
-        prismaCv.rawText,
-        prismaCv.matchScore,
-        prismaCv.createdAt
-    )
+      prismaCv.id,
+      prismaCv.appliedJob,
+      // prismaCv.name,
+      prismaCv.educations,
+      prismaCv.technicalSkills,
+      prismaCv.profesionalExperiences,
+      prismaCv.matchScore,
+      prismaCv.createdAt,
+      prismaCv.updatedAt
+    );
   }
 
   toDTO() {
     return {
-        id: this.id,
-        appliedPosition: this.appliedPosition,
-        jobTitle: this.jobTitle,
-        technicalSkills: this.technicalSkills,
-        profesionalExperience: this.profesionalExperience,
-        rawText: this.rawText,
-        matchScore: this.matchScore,
-        createdAt: this.createdAt
-    }
+      id: this.id,
+      appliedJob: this.appliedJob,
+      // name: this.name,
+      educations: this.educations,
+      technicalSkills: this.technicalSkills,
+      profesionalExperience: this.profesionalExperience,
+      matchScore: this.matchScore,
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt
+    };
   }
 }
 

@@ -1,32 +1,30 @@
+import { JsonValue } from "@prisma/client/runtime/library";
+
 export type Cv = {
   id: number;
-  appliedPosition: string;
-  jobTitle: string;
-  technicalSkills: String;
-  profesionalExperience: string;
-  rawText: string;
-  matchScore?: number;
+  appliedJob: string;
+  name: string;
+  educations: JsonValue;
+  skills: JsonValue;
+  profesionalExperience: JsonValue;
+  matchScore: number | null;
   createdAt: Date;
   updatedAt: Date;
 };
 
 export type CreateCvDto = {
-  appliedPosition: string;
-  jobTitle: string;
-  technicalSkills: string;
-  profesionalExperience: string;
-  rawText: string;
-  matchScore?: number;
+  appliedJob: string;
+  name: string;
+  educations: JsonValue;
+  skills: JsonValue;
+  profesionalExperience: JsonValue;
+  matchScore: number | null;
   email: string;
 };
 
 export type UpdateCvDto = {
-  appliedPosition?: string;
-  jobTitle?: string;
-  technicalSkills?: string;
-  profesionalExperience?: string;
-  rawText?: string;
-  matchScore?: number;
+  cvText: string;
+  parsedData?: JsonValue | null;
 };
 
 export interface CvFilters {

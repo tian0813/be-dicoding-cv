@@ -4,6 +4,8 @@ import { CreateCvDto, UpdateCvDto, CvFilters } from "../types/cv";
 import { PaginationParams } from "../types/pagination";
 import { getErrorMessage } from "../utils/error";
 import { create } from "domain";
+import fs from "fs";
+import pdf from "pdf-parse";
 
 class CvRepository {
   private prisma: PrismaClient;
@@ -12,128 +14,77 @@ class CvRepository {
     this.prisma = prisma;
   }
 
-  async findAll(
-    userId: number,
-    pagination?: PaginationParams,
-    filters?: CvFilters
-  ): Promise<{ cvs: Cv[]; total: number } | string> {
-    try {
-      const page = pagination?.page || 1;
-      const limit = pagination?.limit || 12;
-      const skip = (page - 1) * limit;
+  private parseExtractedText(text: string) {
+    const lines = text
+      .split("\n")
+      .map((l) => l.trim())
+      .filter(Boolean);
 
-      const where: Prisma.CvWhereInput = {
-        isDeleted: false,
-        userId,
-        ...(filters?.search && {
-          OR: [
-            {
-              appliedPosition: {
-                contains: filters.search,
-                mode: Prisma.QueryMode.insensitive,
-              },
-            },
-            {
-              jobTitle: {
-                contains: filters.search,
-                mode: Prisma.QueryMode.insensitive,
-              },
-            },
-          ],
-        }),
-        ...(filters?.startDate && { createdAt: { gte: filters.startDate } }),
-        ...(filters?.endDate && { createdAt: { lte: filters.endDate } }),
-      };
+    const educationSectionMatch = text.match(
+      /(Education\s*&?\s*Certification|Educational Details|Education)[:\s\n]*([\s\S]*?)(?=\n[A-Z][A-Za-z\s&]+:|\n\n|Technical Skills|Professional Experience|Chronological Summary of Experience|Work Experience)/i
+    );
 
-      const [cvs, total] = await Promise.all([
-        this.prisma.cv.findMany({
-          where,
-          skip,
-          take: limit,
-          orderBy: {
-            createdAt: "desc",
-          },
-        }),
-        this.prisma.cv.count({ where }),
-      ]);
+    const educations = educationSectionMatch?.[2]?.trim() || "Unknown";
 
-      return {
-        cvs: cvs.map((cv) => Cv.fromEntity(cv)),
-        total,
-      };
-    } catch (error) {
-      return getErrorMessage(error);
+    const skillsSectionMatch =
+      text.match(
+        /Technical Skills[:\s]*([\s\S]*?)(?=\n[A-Z][a-z]+\s*:|\n\n|\nClient:|\nEducation:)/i
+      ) ||
+      text.match(
+        /Skills[:\s]*([\s\S]*?)(?=\n[A-Z][a-z]+\s*:|\n\n|\nClient:|\nEducation:)/i
+      );
+
+    const rawSkills = skillsSectionMatch?.[1] || "";
+    const skills = rawSkills
+      .split(/,|\n|•|-/)
+      .map((s) => s.trim())
+      .filter((s) => s.length > 1 && s.length < 50 && !/experience/i.test(s));
+
+    const experienceSections = text.match(
+      /(Professional experience|Chronology|Summary of Experience|Work Experience)[:\s]*([\s\S]*)/i
+    );
+
+    const experiences: {
+      company: string;
+      role: string;
+    }[] = [];
+
+    if (experienceSections) {
+      const entries = experienceSections[2]
+        .split(/Client:/i)
+        .map((e) => e.trim())
+        .filter(Boolean);
+
+      for (const entry of entries) {
+        const companyMatch = entry.match(/^(.+?),/);
+        const roleMatch = entry.match(/Role:\s*(.+)/i);
+
+        experiences.push({
+          company: companyMatch?.[1]?.trim() || "Unknown",
+          role: roleMatch?.[1]?.trim() || "Unknown",
+        });
+      }
     }
+
+    return {
+      educations,
+      technicalSkills: skills,
+      profesionalExperiences: experiences,
+    };
   }
 
-  async findById(id: number, userId: number): Promise<Cv | null | string> {
-    try {
-      const cv = await this.prisma.cv.findFirst({
-        where: {
-          id,
-          userId,
-          isDeleted: false,
-        } as Prisma.CvWhereInput,
-      });
-
-      return cv ? Cv.fromEntity(cv) : null;
-    } catch (error) {
-      return getErrorMessage(error);
-    }
+  async parseCvFromPdfBuffer(buffer: Buffer) {
+    const extractedText = await this.extractTextFromPdfBuffer(buffer);
+    const parsedData = this.parseExtractedText(extractedText);
+    return parsedData;
   }
 
-  async create(cvData: CreateCvDto): Promise<Cv | string> {
+  async extractTextFromPdfBuffer(buffer: Buffer): Promise<string> {
     try {
-      const cv = await this.prisma.cv.create({
-        data: {
-          appliedPosition: cvData.appliedPosition,
-          jobTitle: cvData.jobTitle,
-          technicalSkills: cvData.technicalSkills,
-          profesionalExperience: cvData.profesionalExperience,
-          rawText: cvData.rawText,
-          matchScore: cvData.matchScore,
-          user: {
-            connect: {
-              email: cvData.email,
-            },
-          },
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        } as Prisma.CvCreateInput,
-      });
-      return Cv.fromEntity(cv);
+      const data = await pdf(buffer);
+      return data.text;
     } catch (error) {
-      return getErrorMessage(error);
-    }
-  }
-
-  async update(id: number, cvData: UpdateCvDto): Promise<Cv | string> {
-    try {
-      const cv = await this.prisma.cv.update({
-        where: { id } as Prisma.CvWhereUniqueInput,
-        data: {
-          ...cvData,
-          updatedAt: new Date(),
-        },
-      });
-      return Cv.fromEntity(cv);
-    } catch (error) {
-      return getErrorMessage(error);
-    }
-  }
-
-  async softDelete(id: number): Promise<Cv | string> {
-    try {
-      const cv = await this.prisma.cv.update({
-        where: { id } as Prisma.CvWhereUniqueInput,
-        data: {
-          isDeleted: true,
-          updatedAt: new Date(),
-        } as Prisma.CvUpdateInput,
-      });
-      return Cv.fromEntity(cv);
-    } catch (error) {
-      return getErrorMessage(error);
+      throw new Error(`Failed to extract text from PDF buffer: ${error}`);
     }
   }
 }

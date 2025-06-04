@@ -10,105 +10,41 @@ class CvService {
     this.cvRepository = cvRepository;
   }
 
-  async getAllCvs(
-    userId: number,
-    pagination?: PaginationParams,
-    filters?: CvFilters
-  ): Promise<PaginatedResult<Cv> | string> {
-    const data = await this.cvRepository.findAll(userId, pagination, filters);
+  async createCvFromPdfBuffer(
+    buffer: Buffer,
+    appliedJob: string,
+    userId: number
+  ) {
+    try {
+      const parsed = await this.cvRepository.parseCvFromPdfBuffer(buffer);
 
-    if (typeof data === "string") {
-      return data;
+      const newCv = await this.cvRepository["prisma"].cv.create({
+        data: {
+          appliedJob,
+          educations: parsed.educations,
+          profesionalExperiences: parsed.profesionalExperiences,
+          technicalSkills: parsed.technicalSkills,
+          userId,
+        },
+      });
+
+      return newCv;
+    } catch (error) {
+      return `Error creating CV from PDF buffer: ${
+        error instanceof Error ? error.message : error
+      }`;
     }
-
-    const { cvs, total } = data;
-
-    const page = pagination?.page || 1;
-    const limit = pagination?.limit || 12;
-    const lastPage = Math.ceil(total / limit);
-
-    return {
-      data: cvs,
-      meta: {
-        total,
-        page,
-        lastPage,
-        hasNextPage: page < lastPage,
-        hasPrevPage: page > 1,
-      },
-    };
   }
 
-  async getCvById(id: number, userId: number): Promise<Cv | string> {
-    const cv = await this.cvRepository.findById(id, userId);
-    if (typeof cv === "string") {
-      return cv;
+  async extractTextFromPdf(buffer: Buffer): Promise<string | string> {
+    try {
+      const text = await this.cvRepository.extractTextFromPdfBuffer(buffer);
+      return text;
+    } catch (error) {
+      return `Error extracting text from PDF: ${
+        error instanceof Error ? error.message : error
+      }`;
     }
-
-    if (!cv) {
-      return "Cv not found";
-    }
-
-    return cv;
-  }
-
-  async createCv(cvData: CreateCvDto): Promise<Cv | string> {
-    if (
-      !cvData.appliedPosition ||
-      !cvData.jobTitle ||
-      !cvData.technicalSkills ||
-      !cvData.profesionalExperience ||
-      !cvData.rawText
-    ) {
-      return "Applied Position, Job Title, Technicah Skill, Profesional Experience and Raw Text are required";
-    }
-
-    const result = await this.cvRepository.create(cvData);
-    if (typeof result === "string") {
-      return result;
-    }
-
-    return result;
-  }
-
-  async updateCv(
-    userId: number,
-    id: number,
-    cvData: UpdateCvDto
-  ): Promise<Cv | string> {
-    const existingCv = await this.cvRepository.findById(id, userId);
-    if (typeof existingCv === "string") {
-      return existingCv;
-    }
-
-    if (!existingCv) {
-      return "Cv not found";
-    }
-
-    const result = await this.cvRepository.update(id, cvData);
-    if (typeof result === "string") {
-      return result;
-    }
-
-    return result;
-  }
-
-  async softDelete(id: number, userId: number): Promise<Cv | string> {
-    const cv = await this.cvRepository.findById(id, userId)
-    if (typeof cv === "string") {
-      return cv;
-    }
-
-    if (!cv) {
-      return "Cv not found";
-    }
-
-    const result = await this.cvRepository.softDelete(id);
-    if (typeof result === "string") {
-      return result;
-    }
-
-    return result;
   }
 }
 
